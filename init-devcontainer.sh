@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# redirect output to log
-exec > "/var/log/devcontainer-init.log" 2>&1
-
 init_pre_commits(){
     # Install pre-commit for all iworx modules that contain
     # a ".pre-commit-config.yaml" file at its root.
