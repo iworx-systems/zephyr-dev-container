@@ -2,21 +2,19 @@
 
 # .west directory won't exist if west isn't initialized
 if [ ! -d .west ]; then
-
     # Make sure app folder exists
     if [ ! -d app ]; then
-        echo "No 'app' folder found in project root."
-        exit 0
-    fi
+        echo "Unable to init west because there isn't an 'app' folder."
+    else
+        # Initialize West
+        west init -l app \
+        && west config manifest.group-filter -- [+babblesim,+iworx] \
+        && west config manifest.project-filter -- +nanopb
 
-    # Initialize West
-    west init -l app \
-    && west config manifest.group-filter -- [+babblesim,+iworx] \
-    && west config manifest.project-filter -- +nanopb
-
-    # Build net tools if they exist
-    if [ -d $NET_TOOLS_BASE ]; then
-        cd $NET_TOOLS_BASE && make
+        # Build net tools if they exist
+        if [ -d $NET_TOOLS_BASE ]; then
+            cd $NET_TOOLS_BASE && make
+        fi
     fi
 fi
 
@@ -50,4 +48,9 @@ while read prj_path; do
     fi
 done
 
-echo "Pre-commits are setup"
+if [ ! $num_paths -eq 0 ]; then
+    echo "Pre-commits are setup"
+fi
+
+# Keep container open after setup
+sleep infinity
