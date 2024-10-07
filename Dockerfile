@@ -240,5 +240,5 @@ FROM doc AS startup
 
 COPY init-devcontainer.sh  /usr/bin
 RUN chmod +x /usr/bin/init-devcontainer.sh
+
 WORKDIR /root
-CMD [ "/usr/bin/init-devcontainer.sh" ]

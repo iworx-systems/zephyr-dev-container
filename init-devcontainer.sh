@@ -67,6 +67,3 @@ if [ -d "${PRJ_ROOT_DIR}" ]; then
 else
     echo "Unable to init devcontainer because PRJ_ROOT_DIR:${PRJ_ROOT_DIR} does not exist"
 fi
-
-# Keep container open after setup
-sleep infinity
