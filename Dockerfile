@@ -217,7 +217,7 @@ RUN \
 #   && apt-get clean \
 #   && rm -rf /var/lib/apt/lists/*
 
-FROM codechecker as doc
+FROM codechecker AS doc
 
 WORKDIR /opt
 
@@ -236,4 +236,9 @@ RUN \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-CMD [ "(test -d .west || (west init -l app && west update && cd $NET_TOOLS_BASE && make)) && west update" ]
+FROM doc AS startup
+
+COPY init-devcontainer.sh  /usr/bin
+RUN chmod +x /usr/bin/init-devcontainer.sh
+WORKDIR /root
+CMD [ "/usr/bin/init-devcontainer.sh" ]
