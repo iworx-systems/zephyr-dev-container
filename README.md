@@ -27,3 +27,6 @@ The following is an example of the required environment variables being set by i
   }
 }
 ```
+## References
+  
+The Zephyr SDK installation portion of the Dockerfile is based on https://github.com/beriberikix/zephyr-docker
