@@ -47,8 +47,10 @@ RUN \
   && pip3 install tabulate \
   && pip3 install protobuf==3.20.1 grpcio-tools==1.44.0 \
   && pip3 install -U pyocd \
-  && pyocd pack update \
-  && pyocd pack install nrf52840 \
+  # This is commented because 'update' causes the build to handup.
+  # Uncomment this once this pull request has been implemented: https://github.com/pyocd/cmsis-pack-manager/pull/242
+  # && pyocd pack update \
+  # && pyocd pack install nrf52840 \
   && apt-get remove -y --purge \
   python3-pip \
   python3-wheel \
@@ -57,7 +59,7 @@ RUN \
 
 FROM python AS sdk
 
-ARG ZEPHYR_SDK_VERSION=0.16.6
+ARG ZEPHYR_SDK_VERSION=0.17.1
 ARG ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk
 ENV ZEPHYR_SDK_INSTALL_DIR=${ZEPHYR_SDK_INSTALL_DIR}
 ARG TOOLCHAIN=arm-zephyr-eabi
