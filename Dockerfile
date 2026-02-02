@@ -195,8 +195,8 @@ RUN \
   graphviz \
   && mkdir plantuml \
   && cd plantuml \
-  && wget -q https://github.com/plantuml/plantuml/releases/download/v1.2022.14/plantuml-1.2022.14.jar \
-  && mv plantuml-1.2022.14.jar plantuml.jar
+  && wget -q https://github.com/plantuml/plantuml/releases/download/v1.2026.1/plantuml-1.2026.1.jar \
+  && mv plantuml-1.2026.1.jar plantuml.jar
 
 FROM doc AS cleanup-docker-image-build-tools
 
