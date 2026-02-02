@@ -38,13 +38,12 @@ init_west(){
     if [ ! -d "${APPS_DIR}" ]; then
         echo "Unable to init west because APPS_DIR:${APPS_DIR} does not exist."
     else
-    # Initialize West
+        # Initialize West
         west init -l "${APPS_DIR}" \
-        && west config manifest.group-filter -- [+babblesim,+iworx] \
-    && west config manifest.project-filter -- +nanopb
+            && west config manifest.project-filter -- +nanopb
 
-    # Build net tools if they exist
-    if [ -d $NET_TOOLS_BASE ]; then
+        # Build net tools if they exist
+        if [ -d $NET_TOOLS_BASE ]; then
             cd $NET_TOOLS_BASE && make && cd "${PRJ_ROOT_DIR}"
         fi
     fi
