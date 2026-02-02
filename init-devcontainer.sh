@@ -35,16 +35,16 @@ init_pre_commits(){
 
 init_west(){
     # Make sure app folder exists
-    if [ ! -d "${APP_DIR}" ]; then
-        echo "Unable to init west because APP_DIR:${APP_DIR} does not exist."
+    if [ ! -d "${APPS_DIR}" ]; then
+        echo "Unable to init west because APPS_DIR:${APPS_DIR} does not exist."
     else
-        # Initialize West
-        west init -l "${APP_DIR}" \
+    # Initialize West
+        west init -l "${APPS_DIR}" \
         && west config manifest.group-filter -- [+babblesim,+iworx] \
-        && west config manifest.project-filter -- +nanopb
+    && west config manifest.project-filter -- +nanopb
 
-        # Build net tools if they exist
-        if [ -d $NET_TOOLS_BASE ]; then
+    # Build net tools if they exist
+    if [ -d $NET_TOOLS_BASE ]; then
             cd $NET_TOOLS_BASE && make && cd "${PRJ_ROOT_DIR}"
         fi
     fi
