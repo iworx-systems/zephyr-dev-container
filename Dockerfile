@@ -3,12 +3,11 @@
 FROM debian:12.11-slim AS base
 
 # APT packages to install while building this image and remove when done building.
-ARG DOCKER_IMAGE_BUILD_PACKAGES="python3-dev python3-pip wget"
+ARG DOCKER_IMAGE_BUILD_PACKAGES="python3-dev python3-pip wget curl"
 
 ARG ZEPHYR_VERSION=main
 
 # Zephyr SDK
-ARG ZEPHYR_SDK_VERSION=0.17.0
 ARG ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk
 ARG TOOLCHAIN=arm-zephyr-eabi
 ARG TEST_TOOLCHAIN=x86_64-zephyr-elf
@@ -64,15 +63,16 @@ ENV ZEPHYR_SDK_INSTALL_DIR=${ZEPHYR_SDK_INSTALL_DIR}
 ENV TOOLCHAIN=${TOOLCHAIN}
 
 RUN \
-  export sdk_file_name="zephyr-sdk-${ZEPHYR_SDK_VERSION}_linux-$(uname -m)_minimal.tar.xz" \
-  && apt-get -y update \
+  apt-get -y update \
   && apt-get -y install --no-install-recommends \
   protobuf-compiler \
   python3-protobuf \
   device-tree-compiler \
   ninja-build \
   xz-utils \
-  && wget -q "https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${ZEPHYR_SDK_VERSION}/${sdk_file_name}" \
+  && export zephyr_sdk_version="$(curl https://raw.githubusercontent.com/iworx-systems/zephyr/main/SDK_VERSION)" \
+  && export sdk_file_name="zephyr-sdk-${zephyr_sdk_version}_linux-$(uname -m)_minimal.tar.xz" \
+  && wget -q "https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${zephyr_sdk_version}/${sdk_file_name}" \
   && mkdir -p ${ZEPHYR_SDK_INSTALL_DIR} \
   && tar -xvf ${sdk_file_name} -C ${ZEPHYR_SDK_INSTALL_DIR} --strip-components=1 \
   && ${ZEPHYR_SDK_INSTALL_DIR}/setup.sh -t ${TOOLCHAIN} -t ${TEST_TOOLCHAIN} \
@@ -102,7 +102,7 @@ FROM nrfjprog AS cmock_unity_module
 RUN \
   apt-get -y update \
   && apt-get -y install --no-install-recommends \
-  xz-utils file make gcc gcc-multilib g++-multilib libsdl2-dev libmagic1 curl \
+  xz-utils file make gcc gcc-multilib g++-multilib libsdl2-dev libmagic1 \
 	ruby
 
 FROM cmock_unity_module AS renode
