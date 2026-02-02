@@ -5,7 +5,8 @@ FROM debian:12.11-slim AS base
 # APT packages to install while building this image and remove when done building.
 ARG DOCKER_IMAGE_BUILD_PACKAGES="python3-dev python3-pip wget curl"
 
-ARG ZEPHYR_VERSION=main
+# Using working branch
+ARG ZEPHYR_VERSION=development
 
 # Zephyr SDK
 ARG ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk
@@ -70,7 +71,7 @@ RUN \
   device-tree-compiler \
   ninja-build \
   xz-utils \
-  && export zephyr_sdk_version="$(curl https://raw.githubusercontent.com/iworx-systems/zephyr/main/SDK_VERSION)" \
+  && export zephyr_sdk_version="$(curl https://raw.githubusercontent.com/iworx-systems/zephyr/${ZEPHYR_VERSION}/SDK_VERSION)" \
   && export sdk_file_name="zephyr-sdk-${zephyr_sdk_version}_linux-$(uname -m)_minimal.tar.xz" \
   && wget -q "https://github.com/zephyrproject-rtos/sdk-ng/releases/download/v${zephyr_sdk_version}/${sdk_file_name}" \
   && mkdir -p ${ZEPHYR_SDK_INSTALL_DIR} \
