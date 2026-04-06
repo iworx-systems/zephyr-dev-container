@@ -8,6 +8,9 @@ ARG DOCKER_IMAGE_BUILD_PACKAGES="python3-dev python3-pip wget curl"
 # Using working branch
 ARG ZEPHYR_VERSION=development
 
+# Python version to build from source
+ARG PYTHON_VERSION=3.12.8
+
 # Zephyr SDK
 ARG ZEPHYR_SDK_INSTALL_DIR=/opt/zephyr-sdk
 ARG TOOLCHAIN=arm-zephyr-eabi
@@ -20,7 +23,26 @@ RUN \
   && apt-get -y install --no-install-recommends \
   ${DOCKER_IMAGE_BUILD_PACKAGES}
 
-FROM docker-image-build-packages AS utilities
+FROM docker-image-build-packages AS python-install
+
+ARG PYTHON_VERSION
+
+RUN \
+  apt-get -y update \
+  && apt-get -y install --no-install-recommends \
+    build-essential zlib1g-dev libncurses-dev libgdbm-dev libnss3-dev \
+    libssl-dev libreadline-dev libffi-dev libsqlite3-dev libbz2-dev \
+    liblzma-dev \
+  && wget https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz \
+  && tar -xf Python-${PYTHON_VERSION}.tgz \
+  && cd Python-${PYTHON_VERSION} \
+  && ./configure --prefix=/usr/local \
+  && make -j$(nproc) \
+  && make install \
+  && cd .. \
+  && rm -rf Python-${PYTHON_VERSION} Python-${PYTHON_VERSION}.tgz
+
+FROM python-install AS utilities
 
 RUN \
   apt-get -y update \
@@ -38,13 +60,12 @@ RUN \
   apt-get -y update \
   && apt-get -y install --no-install-recommends \
   && python3 -m pip config set global.break-system-packages true \
+  && pip3 install clang-format \
   && pip3 install pre-commit \
   && pip3 install west \
   && pip3 install \
-  -r https://raw.githubusercontent.com/iworx-systems/zephyr/${ZEPHYR_VERSION}/scripts/requirements-base.txt \
+  -r https://raw.githubusercontent.com/iworx-systems/zephyr/${ZEPHYR_VERSION}/scripts/requirements.txt \
   && pip3 install cmake \
-  # Workaround until https://github.com/zephyrproject-rtos/zephyr/issues/56215 is fixed
-  && pip3 install requests \
   && pip3 install click \
   && pip3 install cryptography \
   && pip3 install cbor2 \
