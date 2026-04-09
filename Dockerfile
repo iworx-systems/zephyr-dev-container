@@ -206,7 +206,28 @@ RUN \
 #   && ./bootstrap-configure --disable-android --disable-midi \
 #   && make -j$(nproc)
 
-FROM codechecker AS doc
+FROM codechecker AS nodejs
+# I need to install node for the dts-linter used in Zephyr's compliance checks
+
+ARG NODE_MAJOR=22
+
+RUN \
+  apt-get -y update \
+  && apt-get -y install --no-install-recommends ca-certificates gnupg \
+  && mkdir -p /etc/apt/keyrings \
+  && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+  && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_${NODE_MAJOR}.x nodistro main" > /etc/apt/sources.list.d/nodesource.list \
+  && apt-get -y update \
+  && apt-get -y install --no-install-recommends nodejs \
+  && mkdir -p /tmp/zephyr-ci \
+  && curl -fsSL -o /tmp/zephyr-ci/package.json https://raw.githubusercontent.com/iworx-systems/zephyr/${ZEPHYR_VERSION}/scripts/ci/package.json \
+  && curl -fsSL -o /tmp/zephyr-ci/package-lock.json https://raw.githubusercontent.com/iworx-systems/zephyr/${ZEPHYR_VERSION}/scripts/ci/package-lock.json \
+  && npm --prefix /tmp/zephyr-ci ci \
+  && rm -rf /tmp/zephyr-ci \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM nodejs AS doc
 
 WORKDIR /opt
 
