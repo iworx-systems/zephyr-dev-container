@@ -236,10 +236,9 @@ RUN \
   && apt-get -y install \
   default-jre \
   graphviz \
-  && mkdir plantuml \
-  && cd plantuml \
-  && wget -q https://github.com/plantuml/plantuml/releases/download/v1.2026.1/plantuml-1.2026.1.jar \
-  && mv plantuml-1.2026.1.jar plantuml.jar
+  && mkdir plantuml
+
+COPY plantuml-1.2026.3beta7.jar plantuml/plantuml.jar
 
 FROM doc AS cleanup-docker-image-build-tools
 

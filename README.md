@@ -27,6 +27,10 @@ The following is an example of the required environment variables being set by i
   }
 }
 ```
+
+### PlantUML
+I am using a custom build of [plantuml](https://github.com/iworx-systems/plantuml) with increased hardcoded limits to allow me to generate the large RecordingDevice.proto graph.
+
 ## References
   
 The Zephyr SDK installation portion of the Dockerfile is based on https://github.com/beriberikix/zephyr-docker
