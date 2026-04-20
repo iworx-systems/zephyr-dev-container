@@ -250,7 +250,4 @@ RUN \
 
 FROM cleanup-docker-image-build-tools AS startup
 
-COPY init-devcontainer.sh  /usr/bin
-RUN chmod +x /usr/bin/init-devcontainer.sh
-
 WORKDIR /root
