@@ -59,6 +59,7 @@ FROM utilities AS python-packages
 RUN \
   apt-get -y update \
   && apt-get -y install --no-install-recommends \
+  && pip3 install --upgrade pip \
   && python3 -m pip config set global.break-system-packages true \
   && pip3 install clang-format \
   && pip3 install pre-commit \
@@ -240,14 +241,34 @@ RUN \
 
 COPY plantuml-1.2026.3beta7.jar plantuml/plantuml.jar
 
-FROM doc AS cleanup-docker-image-build-tools
+FROM doc AS iworx_zephyr_apps_runtime
+
+# dfu-util is the flash payload for the twister test loop
+# (scripts/linux/twister_flash.sh).
+RUN \
+  apt-get -y update \
+  && apt-get -y install --no-install-recommends \
+  dfu-util \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+FROM iworx_zephyr_apps_runtime AS cleanup-docker-image-build-tools
 
 RUN \
   apt-get remove -y --purge \
   ${DOCKER_IMAGE_BUILD_PACKAGES} \
   && apt-get clean \
+  && pip3 install pyusb \
+  && pip3 install libusb1 \
+  && pip3 install libusb-package \
+  && pip3 install pyocd[pack] \
+  && pip3 install cmsis-pack-manager \
   && rm -rf /var/lib/apt/lists/*
 
-FROM cleanup-docker-image-build-tools AS startup
+FROM cleanup-docker-image-build-tools AS claude
+
+RUN npm install -g @anthropic-ai/claude-code
+
+FROM claude AS startup
 
 WORKDIR /root
