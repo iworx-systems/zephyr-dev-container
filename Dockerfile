@@ -243,12 +243,11 @@ COPY plantuml-1.2026.3beta7.jar plantuml/plantuml.jar
 
 FROM doc AS iworx_zephyr_apps_runtime
 
-# dfu-util is the flash payload for the twister test loop
-# (scripts/linux/twister_flash.sh).
 RUN \
   apt-get -y update \
   && apt-get -y install --no-install-recommends \
   dfu-util \
+  uhubctl \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
